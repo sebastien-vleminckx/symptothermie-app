@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// API URL - uses relative path for same-domain deployment on Vercel
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
