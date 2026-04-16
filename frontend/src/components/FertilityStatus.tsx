@@ -1,11 +1,11 @@
-import React from 'react';
+import type { FC } from 'react';
 
 interface FertilityStatusProps {
   status: 'fertile' | 'infertile' | 'uncertain' | null;
   date?: string;
 }
 
-export default function FertilityStatus({ status, date }: FertilityStatusProps) {
+const FertilityStatus: FC<FertilityStatusProps> = ({ status, date }) => {
   const getStatusConfig = () => {
     switch (status) {
       case 'fertile':
@@ -59,4 +59,6 @@ export default function FertilityStatus({ status, date }: FertilityStatusProps) 
       </div>
     </div>
   );
-}
+};
+
+export default FertilityStatus;

@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import * as React from "react";
 
 interface User {
   id: string;
@@ -16,14 +17,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+const API_URL = "/api";
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider(props: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       validateToken(token);
     } else {
@@ -33,59 +34,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const validateToken = async (token: string) => {
     try {
-      const response = await fetch(`${API_URL}/auth/me`, {
-        headers: { 'Authorization': `Bearer ${token}` },
+      const response = await fetch(API_URL + "/auth/me", {
+        headers: { "Authorization": "Bearer " + token },
       });
 
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
       } else {
-        localStorage.removeItem('token');
+        localStorage.removeItem("token");
       }
     } catch {
-      localStorage.removeItem('token');
+      localStorage.removeItem("token");
     } finally {
       setIsLoading(false);
     }
   };
 
   const login = async (email: string, password: string) => {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch(API_URL + "/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'Login failed');
+      throw new Error(error.message || "Login failed");
     }
 
     const data = await response.json();
-    localStorage.setItem('token', data.token);
+    localStorage.setItem("token", data.token);
     setUser(data.user);
   };
 
   const register = async (email: string, password: string) => {
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch(API_URL + "/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'Registration failed');
+      throw new Error(error.message || "Registration failed");
     }
 
     const data = await response.json();
-    localStorage.setItem('token', data.token);
+    localStorage.setItem("token", data.token);
     setUser(data.user);
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setUser(null);
   };
 
@@ -98,17 +99,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     logout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return React.createElement(AuthContext.Provider, { value }, props.children);
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { api } from '../services/api';
 
 interface CalendarDay {
   date: string;
@@ -21,13 +20,10 @@ export default function Calendar() {
   const loadCalendarData = async () => {
     setLoading(true);
     try {
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1;
-      const data = await api.getCalendarData(year, month);
-      setCalendarData(data);
+      // Mock data for development
+      setCalendarData(generateMockCalendarData(currentDate));
     } catch (error) {
       console.error('Failed to load calendar data:', error);
-      // Mock data for development
       setCalendarData(generateMockCalendarData(currentDate));
     } finally {
       setLoading(false);
@@ -42,7 +38,7 @@ export default function Calendar() {
 
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const dayOfWeek = new Date(year, month, day).getDay();
+      // dayOfWeek not used currently
       
       // Mock pattern: fertile mid-month, infertile at start/end
       let status: 'fertile' | 'infertile' | 'uncertain' | undefined;

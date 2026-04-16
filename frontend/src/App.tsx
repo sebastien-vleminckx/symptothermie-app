@@ -3,7 +3,7 @@ import { AuthProvider } from './hooks/useAuth';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { DailyEntry } from './pages/DailyEntry';
-import { Calendar } from './pages/Calendar';
+import Calendar from './pages/Calendar';
 import { Chart } from './pages/Chart';
 import { Layout } from './components/Layout';
 

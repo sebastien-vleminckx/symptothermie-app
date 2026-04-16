@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts';
-import { api } from '../services/api';
+// API import removed - using mock data for now
 
 interface ChartData {
   date: string;

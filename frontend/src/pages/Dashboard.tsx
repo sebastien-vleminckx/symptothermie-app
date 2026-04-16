@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PlusIcon, CalendarIcon, ChartBarIcon } from '@heroicons/react/24/outline';
+// Using simple text labels instead of heroicons
 
 interface CycleData {
   date: string;
@@ -102,21 +102,21 @@ export function Dashboard() {
           to="/entry"
           className="flex flex-col items-center justify-center bg-white rounded-xl shadow p-4 hover:shadow-md transition-shadow"
         >
-          <PlusIcon className="w-8 h-8 text-indigo-600 mb-2" />
+          <span className="text-2xl mb-2">+</span>
           <span className="text-sm font-medium text-gray-900">Add Entry</span>
         </Link>
         <Link
           to="/calendar"
           className="flex flex-col items-center justify-center bg-white rounded-xl shadow p-4 hover:shadow-md transition-shadow"
         >
-          <CalendarIcon className="w-8 h-8 text-indigo-600 mb-2" />
+          <span className="text-2xl mb-2">📅</span>
           <span className="text-sm font-medium text-gray-900">Calendar</span>
         </Link>
         <Link
           to="/chart"
           className="flex flex-col items-center justify-center bg-white rounded-xl shadow p-4 hover:shadow-md transition-shadow"
         >
-          <ChartBarIcon className="w-8 h-8 text-indigo-600 mb-2" />
+          <span className="text-2xl mb-2">📊</span>
           <span className="text-sm font-medium text-gray-900">Chart</span>
         </Link>
       </div>
