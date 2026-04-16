@@ -14,10 +14,10 @@ const FertilityStatus: FC<FertilityStatusProps> = ({ status, date }) => {
           shadow: 'shadow-glow-rose',
           bgGradient: 'bg-gradient-to-br from-rose-400 via-rose-500 to-rose-600',
           textColor: 'text-white',
-          label: 'Fertile Window',
+          label: 'Période Fertile',
           emoji: '🌸',
-          subtext: 'High fertility',
-          description: 'You are in your fertile window. This is the best time to conceive.',
+          subtext: 'Haute fertilité',
+          description: 'Vous êtes dans votre période fertile. C\'est le meilleur moment pour concevoir.',
           iconBg: 'bg-rose-200/30',
         };
       case 'infertile':
@@ -26,10 +26,10 @@ const FertilityStatus: FC<FertilityStatusProps> = ({ status, date }) => {
           shadow: 'shadow-glow-sage',
           bgGradient: 'bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600',
           textColor: 'text-white',
-          label: 'Low Fertility',
+          label: 'Faible Fertilité',
           emoji: '🌿',
-          subtext: 'Infertile phase',
-          description: 'You are in a low fertility phase. Chance of conception is minimal.',
+          subtext: 'Phase infertile',
+          description: 'Vous êtes dans une phase de faible fertilité. Les chances de conception sont minimes.',
           iconBg: 'bg-emerald-200/30',
         };
       case 'uncertain':
@@ -38,10 +38,10 @@ const FertilityStatus: FC<FertilityStatusProps> = ({ status, date }) => {
           shadow: 'shadow-glow-amber',
           bgGradient: 'bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500',
           textColor: 'text-white',
-          label: 'Uncertain',
+          label: 'Incertain',
           emoji: '🔮',
-          subtext: 'More data needed',
-          description: 'Add more daily entries to get accurate fertility predictions.',
+          subtext: 'Plus de données nécessaires',
+          description: 'Ajoutez plus de saisies quotidiennes pour obtenir des prédictions précises.',
           iconBg: 'bg-amber-200/30',
         };
       default:
@@ -50,10 +50,10 @@ const FertilityStatus: FC<FertilityStatusProps> = ({ status, date }) => {
           shadow: 'shadow-glow-slate',
           bgGradient: 'bg-gradient-to-br from-slate-400 via-slate-500 to-slate-600',
           textColor: 'text-white',
-          label: 'No Data',
+          label: 'Pas de données',
           emoji: '📝',
-          subtext: 'Start tracking',
-          description: 'Add your first entry to begin tracking your fertility.',
+          subtext: 'Commencez le suivi',
+          description: 'Ajoutez votre première saisie pour commencer à suivre votre fertilité.',
           iconBg: 'bg-slate-200/30',
         };
     }
@@ -75,7 +75,7 @@ const FertilityStatus: FC<FertilityStatusProps> = ({ status, date }) => {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm mb-6">
           <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
           <p className="text-sm font-medium text-white/90">
-            {date || new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+            {date || new Date().toLocaleDateString('fr-FR', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
         </div>
 
@@ -104,10 +104,10 @@ const FertilityStatus: FC<FertilityStatusProps> = ({ status, date }) => {
         {/* Status indicators */}
         <div className="mt-8 flex flex-wrap gap-3">
           <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
-            <span className="text-sm font-medium text-white">Cycle Day 12</span>
+            <span className="text-sm font-medium text-white">Jour du cycle 12</span>
           </div>
           <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
-            <span className="text-sm font-medium text-white">Ovulation ~2 days</span>
+            <span className="text-sm font-medium text-white">Ovulation ~2 jours</span>
           </div>
         </div>
       </div>

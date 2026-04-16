@@ -19,6 +19,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/entries', entriesRoutes);
 app.use('/api/cycles', cyclesRoutes);
 
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
