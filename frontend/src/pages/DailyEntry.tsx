@@ -3,11 +3,52 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 
 const mucusTypes = [
-  { value: 'dry', label: 'Dry', description: 'No visible mucus' },
-  { value: 'sticky', label: 'Sticky', description: 'Thick, tacky, or gummy' },
-  { value: 'creamy', label: 'Creamy', description: 'Like lotion or cream' },
-  { value: 'watery', label: 'Watery', description: 'Clear, wet, slippery' },
-  { value: 'egg-white', label: 'Egg White', description: 'Clear, stretchy, like raw egg white' },
+  { 
+    value: 'dry', 
+    label: 'Dry', 
+    description: 'No visible mucus - Infertile phase',
+    emoji: '🏜️',
+    color: 'from-sage-300 to-sage-400'
+  },
+  { 
+    value: 'sticky', 
+    label: 'Sticky', 
+    description: 'Thick, tacky, or gummy - Less fertile',
+    emoji: '🍯',
+    color: 'from-peach-300 to-peach-400'
+  },
+  { 
+    value: 'creamy', 
+    label: 'Creamy', 
+    description: 'Like lotion or cream - Fertile approaching',
+    emoji: '🧴',
+    color: 'from-rose-200 to-rose-300'
+  },
+  { 
+    value: 'watery', 
+    label: 'Watery', 
+    description: 'Clear, wet, slippery - Highly fertile',
+    emoji: '💧',
+    color: 'from-purple-300 to-purple-400'
+  },
+  { 
+    value: 'egg-white', 
+    label: 'Egg White', 
+    description: 'Clear, stretchy, like raw egg white - Peak fertility',
+    emoji: '🥚',
+    color: 'from-rose-400 to-purple-400'
+  },
+];
+
+const symptoms = [
+  { id: 'cramps', label: 'Cramps', emoji: '😣' },
+  { id: 'bloating', label: 'Bloating', emoji: '🎈' },
+  { id: 'headache', label: 'Headache', emoji: '🤕' },
+  { id: 'mood-swings', label: 'Mood Swings', emoji: '🎭' },
+  { id: 'breast-tenderness', label: 'Breast Tenderness', emoji: '🤱' },
+  { id: 'fatigue', label: 'Fatigue', emoji: '😴' },
+  { id: 'acne', label: 'Acne', emoji: '🔴' },
+  { id: 'spotting', label: 'Spotting', emoji: '💮' },
 ];
 
 export function DailyEntry() {
@@ -15,8 +56,20 @@ export function DailyEntry() {
   const [temperature, setTemperature] = useState('');
   const [mucusType, setMucusType] = useState('');
   const [notes, setNotes] = useState('');
+  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
+  const [menstruation, setMenstruation] = useState(false);
+  const [intimacy, setIntimacy] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  const toggleSymptom = (id: string) => {
+    setSelectedSymptoms(prev => 
+      prev.includes(id) 
+        ? prev.filter(s => s !== id)
+        : [...prev, id]
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,9 +87,15 @@ export function DailyEntry() {
         temperature: temp,
         mucusType: mucusType || undefined,
         notes: notes || undefined,
+        symptoms: selectedSymptoms,
+        menstruation,
+        intimacy,
       });
 
-      navigate('/dashboard');
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save entry');
     } finally {
@@ -45,84 +104,193 @@ export function DailyEntry() {
   };
 
   return (
-    <div className="max-w-md mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Daily Entry</h1>
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+      {/* Header */}
+      <div className="text-center mb-8 animate-fade-in-up">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-400 to-purple-400 text-white mb-4 shadow-lg">
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-bold text-warm-gray-800 mb-2">Daily Entry</h1>
+        <p className="text-warm-gray-500">
+          {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+        </p>
+      </div>
 
+      {/* Success Message */}
+      {success && (
+        <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-sage-100 to-sage-200 text-sage-700 text-center animate-fade-in-up">
+          <span className="text-2xl mr-2">✨</span>
+          Entry saved successfully! Redirecting...
+        </div>
+      )}
+
+      {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+        <div className="mb-6 p-4 rounded-2xl bg-rose-100 text-rose-700 text-center animate-fade-in-up">
+          <span className="text-xl mr-2">⚠️</span>
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-xl shadow p-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
         {/* Temperature Input */}
-        <div>
-          <label htmlFor="temperature" className="block text-sm font-medium text-gray-700 mb-2">
-            Basal Body Temperature (°C)
+        <div className="glass-card rounded-2xl p-6 animate-fade-in-up stagger-1">
+          <label className="block text-sm font-semibold text-warm-gray-700 mb-4 flex items-center gap-2">
+            <span className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center">🌡️</span>
+            Basal Body Temperature
           </label>
-          <input
-            type="number"
-            id="temperature"
-            step="0.01"
-            min="35"
-            max="42"
-            value={temperature}
-            onChange={(e) => setTemperature(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="36.50"
-            required
-          />
-          <p className="mt-1 text-xs text-gray-500">Enter your morning temperature in Celsius</p>
+          <div className="relative">
+            <input
+              type="number"
+              step="0.01"
+              min="35"
+              max="42"
+              value={temperature}
+              onChange={(e) => setTemperature(e.target.value)}
+              className="input-soft text-2xl font-bold text-center"
+              placeholder="36.50"
+              required
+            />
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-warm-gray-400 font-medium">°C</span>
+          </div>
+          <p className="mt-2 text-xs text-warm-gray-500 text-center">
+            Take your temperature first thing in the morning, before getting out of bed
+          </p>
         </div>
 
-        {/* Mucus Type Select */}
-        <div>
-          <label htmlFor="mucus" className="block text-sm font-medium text-gray-700 mb-2">
+        {/* Mucus Type Selection */}
+        <div className="glass-card rounded-2xl p-6 animate-fade-in-up stagger-2">
+          <label className="block text-sm font-semibold text-warm-gray-700 mb-4 flex items-center gap-2">
+            <span className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">💧</span>
             Cervical Mucus Type
           </label>
-          <select
-            id="mucus"
-            value={mucusType}
-            onChange={(e) => setMucusType(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="">Select mucus type (optional)</option>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {mucusTypes.map((type) => (
-              <option key={type.value} value={type.value}>
-                {type.label}
-              </option>
+              <button
+                key={type.value}
+                type="button"
+                onClick={() => setMucusType(type.value)}
+                className={`p-4 rounded-xl border-2 text-left transition-all duration-200 ${
+                  mucusType === type.value
+                    ? 'border-rose-400 bg-rose-50 shadow-md'
+                    : 'border-transparent bg-warm-gray-50 hover:bg-warm-gray-100'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${type.color} flex items-center justify-center text-lg shadow-sm`}>
+                    {type.emoji}
+                  </div>
+                  <div>
+                    <p className={`font-semibold ${mucusType === type.value ? 'text-rose-700' : 'text-warm-gray-800'}`}>
+                      {type.label}
+                    </p>
+                    <p className="text-xs text-warm-gray-500">{type.description}</p>
+                  </div>
+                </div>
+              </button>
             ))}
-          </select>
-          {mucusType && (
-            <p className="mt-1 text-xs text-gray-500">
-              {mucusTypes.find(t => t.value === mucusType)?.description}
-            </p>
-          )}
+          </div>
+        </div>
+
+        {/* Symptoms */}
+        <div className="glass-card rounded-2xl p-6 animate-fade-in-up stagger-3">
+          <label className="block text-sm font-semibold text-warm-gray-700 mb-4 flex items-center gap-2">
+            <span className="w-8 h-8 rounded-lg bg-peach-100 flex items-center justify-center">🌸</span>
+            Symptoms (Optional)
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {symptoms.map((symptom) => (
+              <button
+                key={symptom.id}
+                type="button"
+                onClick={() => toggleSymptom(symptom.id)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  selectedSymptoms.includes(symptom.id)
+                    ? 'bg-gradient-to-r from-rose-400 to-purple-400 text-white shadow-md'
+                    : 'bg-warm-gray-100 text-warm-gray-600 hover:bg-warm-gray-200'
+                }`}
+              >
+                <span className="mr-1">{symptom.emoji}</span>
+                {symptom.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Quick Toggles */}
+        <div className="glass-card rounded-2xl p-6 animate-fade-in-up stagger-4">
+          <div className="space-y-4">
+            <label className="flex items-center justify-between cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <span className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center">🩸</span>
+                <span className="font-medium text-warm-gray-700">Menstruation Today</span>
+              </div>
+              <div className={`relative w-14 h-8 rounded-full transition-colors duration-200 ${menstruation ? 'bg-rose-400' : 'bg-warm-gray-200'}`}>
+                <div className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-200 ${menstruation ? 'translate-x-7' : 'translate-x-1'}`} />
+                <input
+                  type="checkbox"
+                  checked={menstruation}
+                  onChange={(e) => setMenstruation(e.target.checked)}
+                  className="sr-only"
+                />
+              </div>
+            </label>
+
+            <label className="flex items-center justify-between cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <span className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">💕</span>
+                <span className="font-medium text-warm-gray-700">Intimacy</span>
+              </div>
+              <div className={`relative w-14 h-8 rounded-full transition-colors duration-200 ${intimacy ? 'bg-purple-400' : 'bg-warm-gray-200'}`}>
+                <div className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-200 ${intimacy ? 'translate-x-7' : 'translate-x-1'}`} />
+                <input
+                  type="checkbox"
+                  checked={intimacy}
+                  onChange={(e) => setIntimacy(e.target.checked)}
+                  className="sr-only"
+                />
+              </div>
+            </label>
+          </div>
         </div>
 
         {/* Notes */}
-        <div>
-          <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
-            Notes (optional)
+        <div className="glass-card rounded-2xl p-6 animate-fade-in-up stagger-5">
+          <label className="block text-sm font-semibold text-warm-gray-700 mb-4 flex items-center gap-2">
+            <span className="w-8 h-8 rounded-lg bg-lavender-100 flex items-center justify-center">📝</span>
+            Notes (Optional)
           </label>
           <textarea
-            id="notes"
             rows={3}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="Any other observations..."
+            className="input-soft resize-none"
+            placeholder="Any other observations, feelings, or notes about today..."
           />
         </div>
 
         {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {isSubmitting ? 'Saving...' : 'Save Entry'}
-        </button>
+        <div className="pt-4 animate-fade-in-up stagger-5">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full btn-primary py-4 text-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <span>✨</span>
+                Save Entry
+              </>
+            )}
+          </button>
+        </div>
       </form>
     </div>
   );

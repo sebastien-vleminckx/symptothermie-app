@@ -11,16 +11,18 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route element={<Layout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/entry" element={<DailyEntry />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/chart" element={<Chart />} />
-          </Route>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
+        <div className="min-h-screen bg-gradient-soft">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route element={<Layout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/entry" element={<DailyEntry />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/chart" element={<Chart />} />
+            </Route>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </div>
       </BrowserRouter>
     </AuthProvider>
   );
