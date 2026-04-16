@@ -1,7 +1,7 @@
 import express from 'express';
-import { authMiddleware } from '../middleware/auth.js';
-import { supabase } from '../services/supabase.js';
-import { calculateFertilityStatus } from '../services/fertility.js';
+import { authMiddleware } from './middleware.js';
+import { supabase } from './supabase.js';
+import { calculateFertilityStatus } from './fertility.js';
 
 const router = express.Router();
 
@@ -39,7 +39,6 @@ router.get('/:id', authMiddleware, async (req, res) => {
     
     res.json(entry);
   } catch (error) {
-    console.error('Get entry error:', error);
     res.status(500).json({ error: 'Failed to fetch entry' });
   }
 });
@@ -63,7 +62,6 @@ router.post('/', authMiddleware, async (req, res) => {
       notes
     } = req.body;
     
-    // Get or create current cycle
     let { data: cycle } = await supabase
       .from('cycles')
       .select('id')
@@ -86,14 +84,12 @@ router.post('/', authMiddleware, async (req, res) => {
       cycle = newCycle;
     }
     
-    // Calculate fertility status
     const fertilityStatus = calculateFertilityStatus({
       basal_temp,
       mucus_type,
       mucus_quantity
     });
     
-    // Create entry
     const { data: entry, error } = await supabase
       .from('daily_entries')
       .insert([{
@@ -118,7 +114,6 @@ router.post('/', authMiddleware, async (req, res) => {
     
     if (error) throw error;
     
-    // Create fertility status record
     await supabase
       .from('fertility_status')
       .insert([{
@@ -151,7 +146,6 @@ router.put('/:id', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'Entry not found' });
     }
     
-    // Recalculate fertility status
     const fertilityStatus = calculateFertilityStatus({
       basal_temp: entry.basal_temp,
       mucus_type: entry.mucus_type,
@@ -168,7 +162,6 @@ router.put('/:id', authMiddleware, async (req, res) => {
     
     res.json({ ...entry, fertility_status: fertilityStatus });
   } catch (error) {
-    console.error('Update entry error:', error);
     res.status(500).json({ error: 'Failed to update entry' });
   }
 });
@@ -186,7 +179,6 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     
     res.json({ message: 'Entry deleted' });
   } catch (error) {
-    console.error('Delete entry error:', error);
     res.status(500).json({ error: 'Failed to delete entry' });
   }
 });
@@ -203,7 +195,6 @@ router.get('/analysis/fertility', authMiddleware, async (req, res) => {
     
     if (error) throw error;
     
-    // Get today's status
     const today = new Date().toISOString().split('T')[0];
     const todayEntry = entries.find(e => e.entry_date === today);
     
@@ -212,7 +203,6 @@ router.get('/analysis/fertility', authMiddleware, async (req, res) => {
       recent_entries: entries
     });
   } catch (error) {
-    console.error('Fertility analysis error:', error);
     res.status(500).json({ error: 'Failed to analyze fertility' });
   }
 });

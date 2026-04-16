@@ -1,72 +1,45 @@
 # Symptothermie App
 
-A web application for tracking fertility markers to help with natural contraception using the symptothermal method.
+Application web de suivi symptothermique pour contraception naturelle.
 
-## Purpose
+## Architecture
 
-This app helps users track key fertility markers to identify fertile and infertile windows:
+Monorepo avec :
+- **Frontend** : React + Vite + Tailwind CSS (`/frontend`)
+- **Backend** : Express.js serverless API (`/api`)
+- **Database** : PostgreSQL via Supabase
 
-- **Basal Body Temperature (BBT)** - Daily morning temperature readings
-- **Cervical Mucus Observations** - Tracking changes in consistency and quantity
-- **Cervix Position** - Monitoring height, firmness, and openness
+## Déploiement
 
-## What is the Symptothermal Method?
+### Vercel (Frontend + Backend)
 
-The symptothermal method is a natural family planning approach that combines multiple fertility awareness signs to identify the fertile window. By tracking temperature shifts and cervical changes, users can determine when ovulation occurs and either avoid or achieve pregnancy naturally.
+1. Connecter le repo à Vercel
+2. Variables d'environnement :
+   ```
+   JWT_SECRET=your-secret-key
+   SUPABASE_URL=https://your-project.supabase.co
+   SUPABASE_SERVICE_KEY=your-service-key
+   ```
 
-## Features
+### Supabase (Database)
 
-- 📊 Daily fertility marker tracking
-- 📈 Visual charts and cycle analysis
-- 🔔 Reminders for daily readings
-- 🔒 Privacy-focused (data stays yours)
-- 📱 Responsive design for mobile and desktop
+Exécuter `database/schema.sql` dans l'éditeur SQL Supabase.
 
-## Tech Stack
-
-- **Frontend**: React + TypeScript + Vite
-- **Backend**: Node.js + Express (or similar)
-- **Database**: PostgreSQL (or SQLite for local use)
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- npm or yarn
-
-### Installation
+## Développement local
 
 ```bash
-# Clone the repository
-git clone https://github.com/YOUR_USERNAME/symptothermie-app.git
-cd symptothermie-app
+# Frontend
+cd frontend && npm install && npm run dev
 
-# Install frontend dependencies
-cd frontend
-npm install
-npm run dev
-
-# Install backend dependencies (in another terminal)
-cd ../backend
-npm install
-npm run dev
+# Backend
+cd api && npm install && npm run dev
 ```
 
-## Project Structure
+## API Endpoints
 
-```
-symptothermie-app/
-├── frontend/          # React frontend application
-├── backend/           # API server
-├── docs/              # Documentation
-└── README.md          # This file
-```
-
-## Disclaimer
-
-This app is for informational purposes only and should not replace professional medical advice. Consult with a healthcare provider before using fertility awareness methods for contraception.
-
-## License
-
-MIT License - see LICENSE file for details.
+- `POST /api/auth/register` - Inscription
+- `POST /api/auth/login` - Connexion
+- `GET /api/entries` - Liste des entrées
+- `POST /api/entries` - Créer une entrée
+- `GET /api/cycles` - Liste des cycles
+- `GET /api/health` - Health check

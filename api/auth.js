@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
-import { generateToken } from '../middleware/auth.js';
-import { supabase } from '../services/supabase.js';
+import { generateToken } from './middleware.js';
+import { supabase } from './supabase.js';
 import express from 'express';
 
 const router = express.Router();
@@ -14,7 +14,6 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Email and password required' });
     }
     
-    // Check if user exists
     const { data: existingUser } = await supabase
       .from('users')
       .select('id')
@@ -25,10 +24,8 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'User already exists' });
     }
     
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
     
-    // Create user
     const { data: user, error } = await supabase
       .from('users')
       .insert([{ email, password_hash: hashedPassword }])
@@ -58,7 +55,6 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password required' });
     }
     
-    // Get user
     const { data: user, error } = await supabase
       .from('users')
       .select('*')
@@ -69,7 +65,6 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
-    // Verify password
     const isValid = await bcrypt.compare(password, user.password_hash);
     
     if (!isValid) {
