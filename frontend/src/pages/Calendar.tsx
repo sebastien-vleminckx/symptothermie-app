@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { cycleApi, CycleEntry } from '../services/api';
 
 interface CalendarDay {
   date: string;
@@ -20,46 +21,58 @@ export default function Calendar() {
   const loadCalendarData = async () => {
     setLoading(true);
     try {
-      // Mock data for development
-      setCalendarData(generateMockCalendarData(currentDate));
+      const month = currentDate.getMonth() + 1; // API expects 1-12
+      const year = currentDate.getFullYear();
+      
+      // Fetch real data from API
+      const entries = await cycleApi.getCalendar(month, year);
+      
+      // Transform entries into calendar data
+      const yearNum = currentDate.getFullYear();
+      const monthNum = currentDate.getMonth();
+      const daysInMonth = new Date(yearNum, monthNum + 1, 0).getDate();
+      const data: CalendarDay[] = [];
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${yearNum}-${String(monthNum + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const entry = entries.find((e: CycleEntry) => e.date === dateStr);
+        
+        let status: 'fertile' | 'infertile' | 'uncertain' | undefined;
+        if (entry) {
+          // Determine fertility status based on mucus type
+          if (entry.mucusType === 'egg-white' || entry.mucusType === 'watery') {
+            status = 'fertile';
+          } else if (entry.mucusType === 'dry' || entry.mucusType === 'sticky') {
+            status = 'infertile';
+          } else {
+            status = 'uncertain';
+          }
+        }
+
+        data.push({
+          date: dateStr,
+          fertilityStatus: status,
+          hasData: !!entry,
+          menstruation: entry?.menstruation,
+        });
+      }
+      
+      setCalendarData(data);
     } catch (error) {
       console.error('Failed to load calendar data:', error);
-      setCalendarData(generateMockCalendarData(currentDate));
+      // Fallback to empty calendar
+      const yearNum = currentDate.getFullYear();
+      const monthNum = currentDate.getMonth();
+      const daysInMonth = new Date(yearNum, monthNum + 1, 0).getDate();
+      const data: CalendarDay[] = [];
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${yearNum}-${String(monthNum + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        data.push({ date: dateStr, hasData: false });
+      }
+      setCalendarData(data);
     } finally {
       setLoading(false);
     }
-  };
-
-  const generateMockCalendarData = (date: Date): CalendarDay[] => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const data: CalendarDay[] = [];
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      // dayOfWeek not used currently
-      
-      // Mock pattern: fertile mid-month, infertile at start/end
-      let status: 'fertile' | 'infertile' | 'uncertain' | undefined;
-      let hasData = day <= new Date().getDate();
-      
-      if (day >= 10 && day <= 16) {
-        status = 'fertile';
-      } else if (day >= 20 || day <= 5) {
-        status = 'infertile';
-      } else if (hasData) {
-        status = 'uncertain';
-      }
-
-      data.push({
-        date: dateStr,
-        fertilityStatus: status,
-        hasData,
-        menstruation: day <= 5,
-      });
-    }
-    return data;
   };
 
   const getDayColor = (day: CalendarDay) => {
@@ -72,7 +85,7 @@ export default function Calendar() {
     }
   };
 
-  const monthName = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const monthName = currentDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
 
   const navigateMonth = (direction: 'prev' | 'next') => {
     setCurrentDate(prev => {
@@ -88,7 +101,7 @@ export default function Calendar() {
   const firstDayOfMonth = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const weekDays = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
 
   const calendarGrid: (CalendarDay | null)[] = [];
   
@@ -109,9 +122,9 @@ export default function Calendar() {
       <header className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold text-gray-800">Calendar</h1>
+            <h1 className="text-xl font-bold text-gray-800">Calendrier</h1>
             <Link to="/dashboard" className="text-gray-600 hover:text-gray-900">
-              ← Back to Dashboard
+              ← Retour au tableau de bord
             </Link>
           </div>
         </div>
@@ -124,14 +137,14 @@ export default function Calendar() {
             onClick={() => navigateMonth('prev')}
             className="p-2 rounded-lg bg-white shadow-sm hover:bg-gray-50 text-gray-600"
           >
-            ← Previous
+            ← Précédent
           </button>
-          <h2 className="text-xl font-semibold text-gray-800">{monthName}</h2>
+          <h2 className="text-xl font-semibold text-gray-800 capitalize">{monthName}</h2>
           <button
             onClick={() => navigateMonth('next')}
             className="p-2 rounded-lg bg-white shadow-sm hover:bg-gray-50 text-gray-600"
           >
-            Next →
+            Suivant →
           </button>
         </div>
 
@@ -147,11 +160,11 @@ export default function Calendar() {
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded bg-yellow-500"></div>
-            <span className="text-gray-600">Uncertain</span>
+            <span className="text-gray-600">Incertain</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded bg-gray-100 border border-gray-300"></div>
-            <span className="text-gray-600">No Data</span>
+            <span className="text-gray-600">Pas de données</span>
           </div>
         </div>
 
@@ -168,7 +181,7 @@ export default function Calendar() {
 
           {/* Calendar Days */}
           {loading ? (
-            <div className="p-8 text-center text-gray-500">Loading...</div>
+            <div className="p-8 text-center text-gray-500">Chargement...</div>
           ) : (
             <div className="grid grid-cols-7">
               {calendarGrid.map((day, index) => (

@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts';
-// API import removed - using mock data for now
+import { entriesApi, CycleEntry } from '../services/api';
 
 interface ChartData {
   date: string;
@@ -26,38 +26,29 @@ export function Chart() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // TODO: Replace with actual API call
-        // const response = await api.get('/entries/chart');
+        // Fetch real data from API
+        const entries = await entriesApi.getChartData(30);
         
-        // Mock data for demonstration
-        const mockData: ChartData[] = [
-          { date: '2026-04-01', temperature: 36.2, displayDate: 'Apr 1' },
-          { date: '2026-04-02', temperature: 36.15, displayDate: 'Apr 2' },
-          { date: '2026-04-03', temperature: 36.25, displayDate: 'Apr 3' },
-          { date: '2026-04-04', temperature: 36.3, displayDate: 'Apr 4' },
-          { date: '2026-04-05', temperature: 36.2, displayDate: 'Apr 5' },
-          { date: '2026-04-06', temperature: 36.35, displayDate: 'Apr 6' },
-          { date: '2026-04-07', temperature: 36.4, displayDate: 'Apr 7' },
-          { date: '2026-04-08', temperature: 36.45, displayDate: 'Apr 8' },
-          { date: '2026-04-09', temperature: 36.5, displayDate: 'Apr 9' },
-          { date: '2026-04-10', temperature: 36.55, displayDate: 'Apr 10' },
-          { date: '2026-04-11', temperature: 36.6, displayDate: 'Apr 11' },
-          { date: '2026-04-12', temperature: 36.65, displayDate: 'Apr 12' },
-          { date: '2026-04-13', temperature: 36.7, displayDate: 'Apr 13' },
-          { date: '2026-04-14', temperature: 36.75, displayDate: 'Apr 14' },
-          { date: '2026-04-15', temperature: 36.8, displayDate: 'Apr 15' },
-        ];
+        // Transform entries into chart data
+        const chartData: ChartData[] = entries
+          .sort((a: CycleEntry, b: CycleEntry) => new Date(a.date).getTime() - new Date(b.date).getTime())
+          .map((entry: CycleEntry) => ({
+            date: entry.date,
+            temperature: entry.temperature,
+            displayDate: new Date(entry.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }),
+          }));
         
-        setData(mockData);
+        setData(chartData);
         
         // Calculate cover line (highest of first 6 temps + 0.1)
-        if (mockData.length >= 6) {
-          const firstSix = mockData.slice(0, 6);
+        if (chartData.length >= 6) {
+          const firstSix = chartData.slice(0, 6);
           const maxTemp = Math.max(...firstSix.map(d => d.temperature));
           setCoverLine(maxTemp + 0.1);
         }
       } catch (err) {
-        setError('Failed to load chart data');
+        setError('Échec du chargement des données du graphique');
+        console.error('Chart data fetch error:', err);
       } finally {
         setIsLoading(false);
       }
@@ -69,7 +60,7 @@ export function Chart() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Loading chart...</div>
+        <div className="text-gray-500">Chargement du graphique...</div>
       </div>
     );
   }
@@ -85,9 +76,9 @@ export function Chart() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Temperature Chart</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Graphique de température</h1>
         <div className="text-sm text-gray-500">
-          {data.length} days recorded
+          {data.length} jours enregistrés
         </div>
       </div>
 
@@ -113,14 +104,14 @@ export function Chart() {
                   borderRadius: '8px',
                   padding: '12px'
                 }}
-                formatter={(value: number) => [`${value.toFixed(2)}°C`, 'Temperature']}
+                formatter={(value: number) => [`${value.toFixed(2)}°C`, 'Température']}
               />
               {coverLine && (
                 <ReferenceLine 
                   y={coverLine} 
                   stroke="#ef4444" 
                   strokeDasharray="5 5"
-                  label={{ value: 'Cover Line', position: 'right', fill: '#ef4444' }}
+                  label={{ value: 'Ligne de couverture', position: 'right', fill: '#ef4444' }}
                 />
               )}
               <Line 
@@ -138,13 +129,13 @@ export function Chart() {
 
       {/* Legend */}
       <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-600">
-        <h3 className="font-medium text-gray-900 mb-2">Chart Guide</h3>
+        <h3 className="font-medium text-gray-900 mb-2">Guide du graphique</h3>
         <ul className="space-y-1">
-          <li>• <span className="text-indigo-600 font-medium">Blue line</span>: Your daily basal body temperature</li>
+          <li>• <span className="text-indigo-600 font-medium">Ligne bleue</span> : Votre température basale quotidienne</li>
           {coverLine && (
-            <li>• <span className="text-red-600 font-medium">Red dashed line</span>: Cover line (baseline for detecting ovulation)</li>
+            <li>• <span className="text-red-600 font-medium">Ligne rouge en pointillés</span> : Ligne de couverture (référence pour détecter l'ovulation)</li>
           )}
-          <li>• Temperature typically rises 0.2-0.5°C after ovulation</li>
+          <li>• La température augmente généralement de 0,2-0,5°C après l'ovulation</li>
         </ul>
       </div>
     </div>

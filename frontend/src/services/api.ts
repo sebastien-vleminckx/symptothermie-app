@@ -85,8 +85,11 @@ export interface CycleEntry {
   id?: string;
   date: string;
   temperature: number;
-  mucusType?: 'dry' | 'sticky' | 'creamy' | 'watery' | 'egg-white';
+  mucusType?: string;
   notes?: string;
+  symptoms?: string[];
+  menstruation?: boolean;
+  intimacy?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

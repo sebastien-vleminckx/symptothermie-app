@@ -1,54 +1,54 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../services/api';
+import { entriesApi } from '../services/api';
 
 const mucusTypes = [
   { 
     value: 'dry', 
-    label: 'Dry', 
-    description: 'No visible mucus - Infertile phase',
+    label: 'Sèche', 
+    description: 'Pas de glaire visible - Phase infertile',
     emoji: '🏜️',
     color: 'from-sage-300 to-sage-400'
   },
   { 
     value: 'sticky', 
-    label: 'Sticky', 
-    description: 'Thick, tacky, or gummy - Less fertile',
+    label: 'Collante', 
+    description: 'Épaisse, poisseuse ou gommeuse - Moins fertile',
     emoji: '🍯',
     color: 'from-peach-300 to-peach-400'
   },
   { 
     value: 'creamy', 
-    label: 'Creamy', 
-    description: 'Like lotion or cream - Fertile approaching',
+    label: 'Crémeuse', 
+    description: 'Comme de la lotion ou de la crème - Fertilité approche',
     emoji: '🧴',
     color: 'from-rose-200 to-rose-300'
   },
   { 
     value: 'watery', 
-    label: 'Watery', 
-    description: 'Clear, wet, slippery - Highly fertile',
+    label: 'Liquide', 
+    description: 'Claire, humide, glissante - Hautement fertile',
     emoji: '💧',
     color: 'from-purple-300 to-purple-400'
   },
   { 
     value: 'egg-white', 
-    label: 'Egg White', 
-    description: 'Clear, stretchy, like raw egg white - Peak fertility',
+    label: 'Blanc d\'œuf', 
+    description: 'Claire, filante, comme du blanc d\'œuf cru - Fertilité maximale',
     emoji: '🥚',
     color: 'from-rose-400 to-purple-400'
   },
 ];
 
 const symptoms = [
-  { id: 'cramps', label: 'Cramps', emoji: '😣' },
-  { id: 'bloating', label: 'Bloating', emoji: '🎈' },
-  { id: 'headache', label: 'Headache', emoji: '🤕' },
-  { id: 'mood-swings', label: 'Mood Swings', emoji: '🎭' },
-  { id: 'breast-tenderness', label: 'Breast Tenderness', emoji: '🤱' },
+  { id: 'cramps', label: 'Crampes', emoji: '😣' },
+  { id: 'bloating', label: 'Ballonnements', emoji: '🎈' },
+  { id: 'headache', label: 'Maux de tête', emoji: '🤕' },
+  { id: 'mood-swings', label: 'Humeur changeante', emoji: '🎭' },
+  { id: 'breast-tenderness', label: 'Seins sensibles', emoji: '🤱' },
   { id: 'fatigue', label: 'Fatigue', emoji: '😴' },
-  { id: 'acne', label: 'Acne', emoji: '🔴' },
-  { id: 'spotting', label: 'Spotting', emoji: '💮' },
+  { id: 'acne', label: 'Acné', emoji: '🔴' },
+  { id: 'spotting', label: 'Saignements', emoji: '💮' },
 ];
 
 export function DailyEntry() {
@@ -79,10 +79,10 @@ export function DailyEntry() {
     try {
       const temp = parseFloat(temperature);
       if (isNaN(temp) || temp < 35 || temp > 42) {
-        throw new Error('Please enter a valid temperature between 35°C and 42°C');
+        throw new Error('Veuillez entrer une température valide entre 35°C et 42°C');
       }
 
-      await api.post('/entries', {
+      await entriesApi.create({
         date: new Date().toISOString().split('T')[0],
         temperature: temp,
         mucusType: mucusType || undefined,
@@ -97,7 +97,7 @@ export function DailyEntry() {
         navigate('/dashboard');
       }, 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save entry');
+      setError(err instanceof Error ? err.message : 'Échec de l\'enregistrement');
     } finally {
       setIsSubmitting(false);
     }
@@ -112,9 +112,9 @@ export function DailyEntry() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-bold text-warm-gray-800 mb-2">Daily Entry</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-warm-gray-800 mb-2">Nouvelle entrée</h1>
         <p className="text-warm-gray-500">
-          {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+          {new Date().toLocaleDateString('fr-FR', { weekday: 'long', month: 'long', day: 'numeric' })}
         </p>
       </div>
 
@@ -122,7 +122,7 @@ export function DailyEntry() {
       {success && (
         <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-sage-100 to-sage-200 text-sage-700 text-center animate-fade-in-up">
           <span className="text-2xl mr-2">✨</span>
-          Entry saved successfully! Redirecting...
+          Entrée enregistrée avec succès ! Redirection...
         </div>
       )}
 
@@ -139,7 +139,7 @@ export function DailyEntry() {
         <div className="glass-card rounded-2xl p-6 animate-fade-in-up stagger-1">
           <label className="block text-sm font-semibold text-warm-gray-700 mb-4 flex items-center gap-2">
             <span className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center">🌡️</span>
-            Basal Body Temperature
+            Température basale
           </label>
           <div className="relative">
             <input
@@ -156,7 +156,7 @@ export function DailyEntry() {
             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-warm-gray-400 font-medium">°C</span>
           </div>
           <p className="mt-2 text-xs text-warm-gray-500 text-center">
-            Take your temperature first thing in the morning, before getting out of bed
+            Prenez votre température au réveil, avant de sortir du lit
           </p>
         </div>
 
@@ -164,7 +164,7 @@ export function DailyEntry() {
         <div className="glass-card rounded-2xl p-6 animate-fade-in-up stagger-2">
           <label className="block text-sm font-semibold text-warm-gray-700 mb-4 flex items-center gap-2">
             <span className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">💧</span>
-            Cervical Mucus Type
+            Type de glaire cervicale
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {mucusTypes.map((type) => (
@@ -198,7 +198,7 @@ export function DailyEntry() {
         <div className="glass-card rounded-2xl p-6 animate-fade-in-up stagger-3">
           <label className="block text-sm font-semibold text-warm-gray-700 mb-4 flex items-center gap-2">
             <span className="w-8 h-8 rounded-lg bg-peach-100 flex items-center justify-center">🌸</span>
-            Symptoms (Optional)
+            Symptômes (Optionnel)
           </label>
           <div className="flex flex-wrap gap-2">
             {symptoms.map((symptom) => (
@@ -225,7 +225,7 @@ export function DailyEntry() {
             <label className="flex items-center justify-between cursor-pointer group">
               <div className="flex items-center gap-3">
                 <span className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center">🩸</span>
-                <span className="font-medium text-warm-gray-700">Menstruation Today</span>
+                <span className="font-medium text-warm-gray-700">Règles aujourd'hui</span>
               </div>
               <div className={`relative w-14 h-8 rounded-full transition-colors duration-200 ${menstruation ? 'bg-rose-400' : 'bg-warm-gray-200'}`}>
                 <div className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-200 ${menstruation ? 'translate-x-7' : 'translate-x-1'}`} />
@@ -241,7 +241,7 @@ export function DailyEntry() {
             <label className="flex items-center justify-between cursor-pointer group">
               <div className="flex items-center gap-3">
                 <span className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">💕</span>
-                <span className="font-medium text-warm-gray-700">Intimacy</span>
+                <span className="font-medium text-warm-gray-700">Intimité</span>
               </div>
               <div className={`relative w-14 h-8 rounded-full transition-colors duration-200 ${intimacy ? 'bg-purple-400' : 'bg-warm-gray-200'}`}>
                 <div className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-200 ${intimacy ? 'translate-x-7' : 'translate-x-1'}`} />
@@ -260,14 +260,14 @@ export function DailyEntry() {
         <div className="glass-card rounded-2xl p-6 animate-fade-in-up stagger-5">
           <label className="block text-sm font-semibold text-warm-gray-700 mb-4 flex items-center gap-2">
             <span className="w-8 h-8 rounded-lg bg-lavender-100 flex items-center justify-center">📝</span>
-            Notes (Optional)
+            Notes (Optionnel)
           </label>
           <textarea
             rows={3}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             className="input-soft resize-none"
-            placeholder="Any other observations, feelings, or notes about today..."
+            placeholder="Autres observations, ressentis ou notes sur aujourd'hui..."
           />
         </div>
 
@@ -281,12 +281,12 @@ export function DailyEntry() {
             {isSubmitting ? (
               <>
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Saving...
+                Enregistrement...
               </>
             ) : (
               <>
                 <span>✨</span>
-                Save Entry
+                Enregistrer l'entrée
               </>
             )}
           </button>
