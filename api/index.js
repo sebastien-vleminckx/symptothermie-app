@@ -30,4 +30,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
+// Vercel serverless function handler
+// @vercel/node wraps the default export automatically
 export default app;

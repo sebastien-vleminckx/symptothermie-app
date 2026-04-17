@@ -114,9 +114,9 @@ export const entriesApi = {
 };
 
 export const cycleApi = {
-  getSummary: () => api.get<CycleSummary>('/cycle/summary'),
+  getSummary: () => api.get<CycleSummary>('/cycles/summary'),
   getCalendar: (month: number, year: number) =>
-    api.get<CycleEntry[]>(`/cycle/calendar?month=${month}&year=${year}`),
+    api.get<CycleEntry[]>(`/cycles/calendar?month=${month}&year=${year}`),
 };
 
 export { ApiError };
