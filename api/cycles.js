@@ -33,7 +33,7 @@ router.get('/summary', authMiddleware, async (req, res) => {
     const currentCycleDay = Math.floor((today.getTime() - cycleStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
     
     // Determine fertility status from latest entry
-    let fertilityStatus: 'fertile' | 'infertile' | 'uncertain' = 'uncertain';
+    let fertilityStatus = 'uncertain';
     const latestEntry = entries?.[0];
     
     if (latestEntry?.fertility_status?.[0]?.calculated_status) {

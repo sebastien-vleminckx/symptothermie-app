@@ -13,6 +13,8 @@
 
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
   }
 
   body {
@@ -23,6 +25,7 @@
     background-attachment: fixed;
     min-height: 100vh;
     color: #292524;
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -33,6 +36,11 @@
 
   #root {
     min-height: 100vh;
+  }
+
+  /* Prevent horizontal overflow on mobile */
+  .overflow-x-hidden {
+    overflow-x: hidden;
   }
 }
 
@@ -61,9 +69,9 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
 
-  /* Soft buttons */
+  /* Soft buttons - Mobile optimized */
   .btn-primary {
-    padding: 1rem 2rem;
+    padding: 0.875rem 1.5rem;
     border-radius: 1rem;
     font-weight: 600;
     color: white;
@@ -72,6 +80,17 @@
     box-shadow: 
       0 4px 20px 0 rgba(244, 63, 94, 0.4),
       0 2px 4px rgba(0, 0, 0, 0.05);
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (min-width: 640px) {
+    .btn-primary {
+      padding: 1rem 2rem;
+    }
   }
 
   .btn-primary:hover {
@@ -86,7 +105,7 @@
   }
 
   .btn-secondary {
-    padding: 1rem 2rem;
+    padding: 0.875rem 1.5rem;
     border-radius: 1rem;
     font-weight: 600;
     transition: all 0.3s;
@@ -94,6 +113,17 @@
     color: #44403c;
     border: 2px solid #e7e5e4;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (min-width: 640px) {
+    .btn-secondary {
+      padding: 1rem 2rem;
+    }
   }
 
   .btn-secondary:hover {
@@ -125,16 +155,24 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.5);
   }
 
-  /* Input styles */
+  /* Input styles - Mobile optimized */
   .input-soft {
     width: 100%;
-    padding: 1rem 1.25rem;
+    padding: 0.875rem 1rem;
     border-radius: 1rem;
     transition: all 0.3s;
     background: rgba(255, 255, 255, 0.8);
     border: 2px solid transparent;
     color: #292524;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+    font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 44px;
+  }
+
+  @media (min-width: 640px) {
+    .input-soft {
+      padding: 1rem 1.25rem;
+    }
   }
 
   .input-soft:focus {
@@ -150,14 +188,25 @@
     color: #a8a29e;
   }
 
-  /* Navigation */
+  /* Navigation - Mobile optimized */
   .nav-link {
     position: relative;
-    padding: 0.625rem 1.25rem;
+    padding: 0.5rem;
     border-radius: 0.75rem;
     font-weight: 500;
     transition: all 0.3s;
     color: #78716c;
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (min-width: 640px) {
+    .nav-link {
+      padding: 0.625rem 1.25rem;
+    }
   }
 
   .nav-link:hover {
@@ -168,6 +217,26 @@
   .nav-link.active {
     color: #e11d48;
     background: rgba(253, 164, 175, 0.18);
+  }
+
+  /* Mobile navigation */
+  .mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  @media (min-width: 768px) {
+    .mobile-nav {
+      display: none;
+    }
   }
 
   /* Animations */
@@ -298,17 +367,27 @@
   .stagger-5 { animation-delay: 0.5s; }
   .stagger-6 { animation-delay: 0.6s; }
 
-  /* Calendar day styles */
+  /* Calendar day styles - Mobile optimized */
   .calendar-day {
     position: relative;
     aspect-ratio: 1;
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     transition: all 0.3s;
     cursor: pointer;
+    min-height: 44px;
+    min-width: 44px;
+    font-size: 0.75rem;
+  }
+
+  @media (min-width: 640px) {
+    .calendar-day {
+      border-radius: 1rem;
+      font-size: 1rem;
+    }
   }
 
   .calendar-day:hover {
@@ -339,10 +418,17 @@
     color: #a8a29e;
   }
 
-  /* Custom scrollbar */
+  /* Custom scrollbar - Mobile optimized */
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 6px;
+    height: 6px;
+  }
+
+  @media (min-width: 640px) {
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
   }
 
   ::-webkit-scrollbar-track {
@@ -379,6 +465,58 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* Touch-friendly tap targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Safe area for mobile navigation */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 80px);
+  }
+
+  /* Responsive typography */
+  .text-responsive-xs {
+    font-size: clamp(0.625rem, 2vw, 0.75rem);
+  }
+
+  .text-responsive-sm {
+    font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+  }
+
+  .text-responsive-base {
+    font-size: clamp(0.875rem, 3vw, 1rem);
+  }
+
+  .text-responsive-lg {
+    font-size: clamp(1rem, 4vw, 1.125rem);
+  }
+
+  .text-responsive-xl {
+    font-size: clamp(1.125rem, 5vw, 1.25rem);
+  }
+
+  .text-responsive-2xl {
+    font-size: clamp(1.25rem, 6vw, 1.5rem);
+  }
+
+  .text-responsive-3xl {
+    font-size: clamp(1.5rem, 7vw, 1.875rem);
+  }
+
+  .text-responsive-4xl {
+    font-size: clamp(1.875rem, 8vw, 2.25rem);
+  }
+
+  .text-responsive-5xl {
+    font-size: clamp(2.25rem, 10vw, 3rem);
+  }
+
+  .text-responsive-6xl {
+    font-size: clamp(2.5rem, 12vw, 3.75rem);
   }
 }
 
@@ -426,5 +564,63 @@
 
   .shadow-glow-lavender {
     box-shadow: 0 8px 32px rgba(139, 92, 246, 0.35);
+  }
+
+  /* Warm gray colors */
+  .text-warm-800 {
+    color: #292524;
+  }
+
+  .text-warm-700 {
+    color: #44403c;
+  }
+
+  .text-warm-600 {
+    color: #57534e;
+  }
+
+  .text-warm-500 {
+    color: #78716c;
+  }
+
+  .text-warm-400 {
+    color: #a8a29e;
+  }
+
+  .text-warm-200 {
+    color: #e7e5e4;
+  }
+
+  .bg-warm-100 {
+    background-color: #f5f5f4;
+  }
+
+  .bg-warm-50 {
+    background-color: #fafaf9;
+  }
+
+  /* Peach colors */
+  .bg-peach-100 {
+    background-color: #ffedd5;
+  }
+
+  /* Lavender colors */
+  .bg-lavender-100 {
+    background-color: #ede9fe;
+  }
+
+  /* Sage colors */
+  .bg-sage-100 {
+    background-color: #d1fae5;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
